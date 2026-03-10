@@ -1,0 +1,63 @@
+.nl-zone {
+  padding: 18px 24px 14px;
+  border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
+}
+
+.input-label {
+  font-size: 11px;
+  color: var(--muted);
+  margin-bottom: 8px;
+  letter-spacing: .3px;
+}
+
+.nl-row {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.nl-input {
+  flex: 1;
+  font-size: 14px;
+}
+
+.add-btn {
+  background: var(--amber);
+  color: #000;
+  font-weight: 600;
+  font-size: 13px;
+  padding: 10px 20px;
+  border-radius: 8px;
+  white-space: nowrap;
+
+  &:disabled { opacity: .5; cursor: not-allowed; }
+}
+
+.nl-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 8px;
+}
+
+.ai-indicator {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11px;
+  color: var(--muted);
+}
+
+.ai-dot {
+  width: 6px;
+  height: 6px;
+  background: var(--green);
+  border-radius: 50%;
+  animation: pulse 2s infinite;
+}
+
+.error-msg {
+  font-size: 11px;
+  color: var(--red);
+}

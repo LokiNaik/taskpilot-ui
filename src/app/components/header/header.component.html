@@ -1,0 +1,9 @@
+<header class="header">
+  <div class="logo">WorkLog <span>AI</span></div>
+  <div class="header-date mono">{{ today }}</div>
+  <div class="spacer"></div>
+  <button class="digest-btn" (click)="openDigest.emit()">
+    ✦ Today's Digest
+  </button>
+  <div class="avatar">{{ userInitial }}</div>
+</header>

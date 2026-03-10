@@ -1,0 +1,56 @@
+<!-- NL Input -->
+<app-nl-input (taskAdded)="onTaskAdded($event)" />
+
+<!-- Filter Bar -->
+<div class="filter-bar">
+  <button
+    class="chip"
+    *ngFor="let f of filters"
+    [class.active]="filter() === f.value"
+    (click)="filter.set(f.value)">
+    {{ f.label }}
+  </button>
+
+  <div class="spacer"></div>
+
+  <!-- Mini stats -->
+  <div class="mini-stats">
+    <span class="stat"><span class="dot green"></span>{{ stats.done }}/{{ stats.total }} done</span>
+    <span class="stat" *ngIf="stats.critical > 0"><span class="dot red"></span>{{ stats.critical }} critical</span>
+  </div>
+
+  <button class="reprioritize-btn" (click)="reprioritize()" [disabled]="reprioritizing()">
+    {{ reprioritizing() ? '...' : '⟳ Re-score' }}
+  </button>
+</div>
+
+<!-- Task List -->
+<div class="task-list">
+
+  <!-- Day header -->
+  <div class="day-header">
+    <h2 class="day-title">Today <span class="day-sub">— {{ today }}</span></h2>
+    <div class="day-line"></div>
+  </div>
+
+  <!-- Loading -->
+  <div class="loading-state" *ngIf="loading()">
+    <div class="spinner"></div>
+    Loading tasks...
+  </div>
+
+  <!-- Empty -->
+  <div class="empty-state" *ngIf="!loading() && filteredTasks.length === 0">
+    <div class="empty-icon">◌</div>
+    <p>No tasks here. Type something above to get started!</p>
+  </div>
+
+  <!-- Tasks -->
+  <app-task-card
+    *ngFor="let task of filteredTasks"
+    [task]="task"
+    (taskUpdated)="onTaskUpdated($event)"
+    (taskDeleted)="onTaskDeleted($event)"
+  />
+
+</div>

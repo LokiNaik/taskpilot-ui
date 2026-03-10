@@ -1,0 +1,78 @@
+<div class="panel" [class.open]="open">
+
+  <div class="panel-header">
+    <h2 class="panel-title">Daily Digest</h2>
+    <div class="header-actions">
+      <button class="regen-btn" (click)="regenerate()" [disabled]="loading()">↻ Regenerate</button>
+      <button class="close-btn" (click)="close.emit()">✕</button>
+    </div>
+  </div>
+
+  <!-- Loading state -->
+  <div class="loading-state" *ngIf="loading()">
+    <div class="ai-dot"></div>
+    AI is generating your digest...
+  </div>
+
+  <!-- Digest content -->
+  <ng-container *ngIf="digest() as d">
+
+    <!-- Stats grid -->
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="num green">{{ d.stats.done }}</div>
+        <div class="lbl">Done</div>
+      </div>
+      <div class="stat-card">
+        <div class="num amber">{{ d.stats.pending }}</div>
+        <div class="lbl">Pending</div>
+      </div>
+      <div class="stat-card">
+        <div class="num red">{{ d.stats.critical }}</div>
+        <div class="lbl">Critical</div>
+      </div>
+      <div class="stat-card">
+        <div class="num purple">{{ d.stats.total }}</div>
+        <div class="lbl">Total</div>
+      </div>
+    </div>
+
+    <!-- Summary -->
+    <div class="summary-box">{{ d.digest.summary }}</div>
+
+    <!-- Focus tasks -->
+    <div class="section-title">🎯 Focus today</div>
+    <ul class="digest-list">
+      <li *ngFor="let item of d.digest.focus_tasks">
+        <span class="icon arrow">→</span> {{ item }}
+      </li>
+    </ul>
+
+    <!-- Warnings -->
+    <div class="section-title" *ngIf="d.digest.warnings?.length">⚠️ Watch out</div>
+    <ul class="digest-list" *ngIf="d.digest.warnings?.length">
+      <li *ngFor="let item of d.digest.warnings">
+        <span class="icon warn">!</span> {{ item }}
+      </li>
+    </ul>
+
+    <!-- Wins -->
+    <div class="section-title" *ngIf="d.digest.wins?.length">✅ Wins</div>
+    <ul class="digest-list" *ngIf="d.digest.wins?.length">
+      <li *ngFor="let item of d.digest.wins">
+        <span class="icon win">✓</span> {{ item }}
+      </li>
+    </ul>
+
+  </ng-container>
+
+  <!-- Empty state -->
+  <div class="empty-state" *ngIf="!loading() && !digest()">
+    <p>No digest yet.</p>
+    <button class="add-btn" (click)="loadDigest()">Generate Now</button>
+  </div>
+
+</div>
+
+<!-- Overlay -->
+<div class="overlay" [class.visible]="open" (click)="close.emit()"></div>
