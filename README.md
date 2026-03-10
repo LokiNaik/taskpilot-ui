@@ -405,6 +405,7 @@ MIT License — free to use, modify, and distribute.
 
 ## Author
 **Lokesh** 
+
 GitHub → https://github.com/LokiNaik
 Built with ❤️ using Claude AI, Angular, Node.js, and PostgreSQL.
 ```
