@@ -1,3 +1,23 @@
+%flex-center {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+%btn-base {
+  font-size: 11px;
+  padding: 4px 10px;
+  border-radius: 5px;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  color: var(--muted);
+  transition: all .15s;
+}
+
+@mixin priority($color) {
+  border-left: 3px solid $color;
+}
+
 .card {
   background: var(--surface);
   border: 1px solid var(--border);
@@ -5,16 +25,17 @@
   padding: 13px 15px;
   transition: border-color .2s;
   animation: slideIn .2s ease both;
- 
+
   &:hover { border-color: var(--subtle); }
- 
-  &.critical { border-left: 3px solid var(--red); }
-  &.high     { border-left: 3px solid var(--amber); }
-  &.medium   { border-left: 3px solid var(--blue); }
-  &.low      { border-left: 3px solid var(--subtle); }
-  &.done     { opacity: .5; }
+
+  &.critical { @include priority(var(--red)); }
+  &.high     { @include priority(var(--amber)); }
+  &.medium   { @include priority(var(--blue)); }
+  &.low      { @include priority(var(--subtle)); }
+
+  &.done { opacity: .5; }
 }
-// Aur .card-top mein grid hona chahiye — yeh add karo:
+
 .card-top {
   display: grid;
   grid-template-columns: 20px 1fr auto;
@@ -27,16 +48,20 @@
   height: 18px;
   border: 1.5px solid var(--border);
   border-radius: 5px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
   font-size: 11px;
   margin-top: 2px;
   flex-shrink: 0;
   transition: all .15s;
 
-  &:hover  { border-color: var(--green); }
-  &.checked { background: var(--green); border-color: var(--green); color: #000; }
+  @extend %flex-center;
+
+  &:hover { border-color: var(--green); }
+
+  &.checked {
+    background: var(--green);
+    border-color: var(--green);
+    color: #000;
+  }
 }
 
 .body { overflow: hidden; }
@@ -46,7 +71,11 @@
   font-weight: 500;
   margin-bottom: 6px;
   line-height: 1.4;
-  &.done { text-decoration: line-through; color: var(--muted); }
+
+  &.done {
+    text-decoration: line-through;
+    color: var(--muted);
+  }
 }
 
 .meta {
@@ -57,7 +86,8 @@
   margin-bottom: 6px;
 }
 
-.tag {
+.tag,
+.status-badge {
   font-size: 10px;
   font-family: 'JetBrains Mono', monospace;
   padding: 2px 7px;
@@ -70,18 +100,9 @@
 .due {
   font-size: 11px;
   color: var(--muted);
+
   &.overdue { color: var(--red); font-weight: 500; }
   &.today   { color: var(--amber); }
-}
-
-.status-badge {
-  font-size: 10px;
-  color: var(--muted);
-  font-family: 'JetBrains Mono', monospace;
-  background: rgba(255,255,255,.04);
-  padding: 1px 7px;
-  border-radius: 4px;
-  border: 1px solid var(--border);
 }
 
 .score-row {
@@ -105,14 +126,13 @@
   transition: width .4s ease;
 }
 
-.score-label {
+.score-label,
+.score-note {
   font-size: 10px;
   color: var(--muted);
 }
 
 .score-note {
-  font-size: 10px;
-  color: var(--muted);
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -127,19 +147,27 @@
 }
 
 .action-btn {
-  font-size: 11px;
-  padding: 4px 10px;
-  border-radius: 5px;
-  background: var(--surface2);
-  border: 1px solid var(--border);
-  color: var(--muted);
-  transition: all .15s;
+  @extend %btn-base;
 
-  &:hover, &.active { border-color: var(--amber); color: var(--amber); }
-  &.delete { color: var(--red); &:hover { border-color: var(--red); } }
+  &:hover,
+  &.active {
+    border-color: var(--amber);
+    color: var(--amber);
+  }
+
+  &.delete {
+    color: var(--red);
+
+    &:hover { border-color: var(--red); }
+  }
 }
 
-.right { display: flex; flex-direction: column; align-items: flex-end; gap: 4px; }
+.right {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 4px;
+}
 
 .priority-badge {
   font-size: 10px;
@@ -150,26 +178,27 @@
   letter-spacing: .5px;
   white-space: nowrap;
 
-  &.critical { background: rgba(240,78,78,.15);   color: var(--red);   }
-  &.high     { background: rgba(245,166,35,.15);  color: var(--amber); }
-  &.medium   { background: rgba(78,141,240,.15);  color: var(--blue);  }
+  &.critical { background: rgba(240,78,78,.15); color: var(--red); }
+  &.high     { background: rgba(245,166,35,.15); color: var(--amber); }
+  &.medium   { background: rgba(78,141,240,.15); color: var(--blue); }
   &.low      { background: rgba(107,114,128,.15); color: var(--muted); }
 }
 
-
- 
 .edit-toggle {
-  background: var(--surface2);
-  border: 1px solid var(--border);
-  color: var(--muted);
-  width: 24px; height: 24px;
-  border-radius: 4px;
+  @extend %btn-base;
+  width: 24px;
+  height: 24px;
   font-size: 10px;
-  display: flex; align-items: center; justify-content: center;
   margin-top: 2px;
-  &:hover { border-color: var(--amber); color: var(--amber); }
+
+  @extend %flex-center;
+
+  &:hover {
+    border-color: var(--amber);
+    color: var(--amber);
+  }
 }
- 
+
 .edit-section {
   margin-top: 12px;
   padding-top: 12px;
@@ -179,12 +208,12 @@
   gap: 12px;
   animation: slideIn .15s ease;
 }
- 
+
 .edit-row {
   display: flex;
   align-items: center;
   gap: 12px;
- 
+
   label {
     font-size: 11px;
     color: var(--muted);
@@ -194,33 +223,33 @@
     letter-spacing: .5px;
   }
 }
- 
+
 .btn-group {
   display: flex;
   gap: 6px;
   flex-wrap: wrap;
 }
- 
-.p-btn, .s-btn {
-  font-size: 11px;
-  padding: 4px 10px;
-  border-radius: 5px;
-  background: var(--surface2);
-  border: 1px solid var(--border);
-  color: var(--muted);
-  transition: all .15s;
- 
-  &:hover { border-color: var(--subtle); color: var(--text); }
- 
+
+.p-btn,
+.s-btn {
+  @extend %btn-base;
+
+  &:hover {
+    border-color: var(--subtle);
+    color: var(--text);
+  }
+
   &.active {
-    &.critical { background: rgba(240,78,78,.15);  color: var(--red);   border-color: var(--red);   }
-    &.high     { background: rgba(245,166,35,.15); color: var(--amber); border-color: var(--amber); }
-    &.medium   { background: rgba(78,141,240,.15); color: var(--blue);  border-color: var(--blue);  }
-    &.low      { background: rgba(107,114,128,.15);color: var(--muted); border-color: var(--muted); }
-    border-color: var(--amber); color: var(--amber);
+    border-color: var(--amber);
+    color: var(--amber);
+
+    &.critical { background: rgba(240,78,78,.15); color: var(--red); }
+    &.high     { background: rgba(245,166,35,.15); color: var(--amber); }
+    &.medium   { background: rgba(78,141,240,.15); color: var(--blue); }
+    &.low      { background: rgba(107,114,128,.15); color: var(--muted); }
   }
 }
- 
+
 .edit-input {
   background: var(--surface2);
   border: 1px solid var(--border);
@@ -230,18 +259,17 @@
   font-size: 12px;
   font-family: 'Outfit', sans-serif;
   outline: none;
-  &:focus { border-color: var(--amber); }
- 
-  /* Date/time picker dark theme */
   color-scheme: dark;
+
+  &:focus { border-color: var(--amber); }
 }
- 
+
 .edit-actions {
   display: flex;
   gap: 8px;
   padding-top: 4px;
 }
- 
+
 .save-btn {
   background: var(--green);
   color: #000;
@@ -250,23 +278,22 @@
   padding: 6px 16px;
   border-radius: 6px;
 }
- 
+
 .cancel-btn {
-  background: var(--surface2);
-  border: 1px solid var(--border);
-  color: var(--muted);
-  font-size: 12px;
-  padding: 6px 12px;
-  border-radius: 6px;
+  @extend %btn-base;
 }
- 
+
 .delete-btn {
   margin-left: auto;
-  background: transparent;
   border: 1px solid var(--border);
   color: var(--red);
   font-size: 12px;
   padding: 6px 12px;
   border-radius: 6px;
-  &:hover { border-color: var(--red); background: rgba(240,78,78,.1); }
+  background: transparent;
+
+  &:hover {
+    border-color: var(--red);
+    background: rgba(240,78,78,.1);
+  }
 }
