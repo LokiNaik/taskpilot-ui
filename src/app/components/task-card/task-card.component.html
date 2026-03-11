@@ -1,47 +1,98 @@
-<div class="card" [class]="task.priority" [class.done]="isDone" (click)="expanded = !expanded">
-
-  <!-- Check button -->
-  <div class="check" [class.checked]="isDone" (click)="$event.stopPropagation(); toggleDone()">
-    {{ isDone ? '✓' : '' }}
-  </div>
-
-  <!-- Body -->
-  <div class="body">
-    <div class="title" [class.done]="isDone">{{ task.title }}</div>
-
-    <!-- Meta row -->
-    <div class="meta">
-      <span class="tag" *ngFor="let tag of task.tags">#{{ tag }}</span>
-      <span class="due"
-        [class.overdue]="isOverdue"
-        [class.today]="isDueToday"
-        *ngIf="task.due_date">
-        ⏰ {{ dueDateLabel }}
-      </span>
-      <span class="status-badge">{{ task.status | titlecase }}</span>
+<div class="card" [class]="task.priority" [class.done]="isDone">
+ 
+  <!-- Top row -->
+  <div class="card-top">
+    <div class="check" [class.checked]="isDone" (click)="toggleDone()">
+      {{ isDone ? '✓' : '' }}
     </div>
-
-    <!-- AI Score bar -->
-    <div class="score-row" *ngIf="task.ai_priority_score !== null">
-      <div class="score-track">
-        <div class="score-fill" [style.width]="scoreWidth" [style.background]="scoreColor"></div>
+ 
+    <div class="body">
+      <div class="title" [class.done]="isDone">{{ task.title }}</div>
+ 
+      <div class="meta">
+        <span class="tag" *ngFor="let tag of task.tags">#{{ tag }}</span>
+        <span class="due" [class.overdue]="isOverdue" [class.today]="isDueToday" *ngIf="task.due_date">
+          ⏰ {{ dueDateLabel }}
+        </span>
+        <span class="status-badge">{{ task.status | titlecase }}</span>
       </div>
-      <span class="score-label mono">AI {{ task.ai_priority_score | number:'1.0-0' }}</span>
-      <span class="score-note" *ngIf="task.ai_notes">· {{ task.ai_notes }}</span>
+ 
+      <div class="score-row" *ngIf="task.ai_priority_score !== null">
+        <div class="score-track">
+          <div class="score-fill" [style.width]="scoreWidth" [style.background]="scoreColor"></div>
+        </div>
+        <span class="score-label mono">AI {{ task.ai_priority_score | number:'1.0-0' }}</span>
+        <span class="score-note" *ngIf="task.ai_notes">· {{ task.ai_notes }}</span>
+      </div>
     </div>
-
-    <!-- Expanded actions -->
-    <div class="actions" *ngIf="expanded" (click)="$event.stopPropagation()">
-      <button class="action-btn" (click)="setStatus('in_progress')" [class.active]="task.status === 'in_progress'">In Progress</button>
-      <button class="action-btn" (click)="setStatus('blocked')"     [class.active]="task.status === 'blocked'">Blocked</button>
-      <button class="action-btn" (click)="setStatus('deferred')"    [class.active]="task.status === 'deferred'">Defer</button>
-      <button class="action-btn delete" (click)="delete()">Delete</button>
+ 
+    <div class="right">
+      <span class="priority-badge" [class]="task.priority">{{ task.priority }}</span>
+      <button class="edit-toggle" (click)="expanded = !expanded">
+        {{ expanded ? '▲' : '▼' }}
+      </button>
     </div>
   </div>
-
-  <!-- Right side -->
-  <div class="right">
-    <span class="priority-badge" [class]="task.priority">{{ task.priority }}</span>
+ 
+  <!-- Expanded edit section -->
+  <div class="edit-section" *ngIf="expanded">
+ 
+    <!-- Priority -->
+    <div class="edit-row">
+      <label>Priority</label>
+      <div class="btn-group">
+        <button
+          *ngFor="let p of priorities"
+          class="p-btn"
+          [class]="p"
+          [class.active]="editPriority === p"
+          (click)="editPriority = p">
+          {{ p }}
+        </button>
+      </div>
+    </div>
+ 
+    <!-- Due Date -->
+    <div class="edit-row">
+      <label>Due Date</label>
+      <input
+        type="date"
+        class="edit-input"
+        [(ngModel)]="editDueDate"
+      />
+    </div>
+ 
+    <!-- Due Time -->
+    <div class="edit-row">
+      <label>Due Time</label>
+      <input
+        type="time"
+        class="edit-input"
+        [(ngModel)]="editDueTime"
+      />
+    </div>
+ 
+    <!-- Status -->
+    <div class="edit-row">
+      <label>Status</label>
+      <div class="btn-group">
+        <button
+          *ngFor="let s of statuses"
+          class="s-btn"
+          [class.active]="task.status === s.value"
+          (click)="setStatus(s.value)">
+          {{ s.label }}
+        </button>
+      </div>
+    </div>
+ 
+    <!-- Action buttons -->
+    <div class="edit-actions">
+      <button class="save-btn" (click)="saveEdits()">✓ Save</button>
+      <button class="cancel-btn" (click)="expanded = false">Cancel</button>
+      <button class="delete-btn" (click)="delete()">Delete</button>
+    </div>
+ 
   </div>
-
+ 
 </div>

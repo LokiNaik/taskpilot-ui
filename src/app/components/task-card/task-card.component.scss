@@ -3,21 +3,23 @@
   border: 1px solid var(--border);
   border-radius: 10px;
   padding: 13px 15px;
-  display: grid;
-  grid-template-columns: 20px 1fr auto;
-  gap: 12px;
-  align-items: start;
-  cursor: pointer;
-  transition: border-color .2s, transform .1s;
+  transition: border-color .2s;
   animation: slideIn .2s ease both;
-
-  &:hover { border-color: var(--subtle); transform: translateX(2px); }
-
+ 
+  &:hover { border-color: var(--subtle); }
+ 
   &.critical { border-left: 3px solid var(--red); }
   &.high     { border-left: 3px solid var(--amber); }
   &.medium   { border-left: 3px solid var(--blue); }
   &.low      { border-left: 3px solid var(--subtle); }
   &.done     { opacity: .5; }
+}
+// Aur .card-top mein grid hona chahiye — yeh add karo:
+.card-top {
+  display: grid;
+  grid-template-columns: 20px 1fr auto;
+  gap: 12px;
+  align-items: start;
 }
 
 .check {
@@ -152,4 +154,119 @@
   &.high     { background: rgba(245,166,35,.15);  color: var(--amber); }
   &.medium   { background: rgba(78,141,240,.15);  color: var(--blue);  }
   &.low      { background: rgba(107,114,128,.15); color: var(--muted); }
+}
+
+
+ 
+.edit-toggle {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  color: var(--muted);
+  width: 24px; height: 24px;
+  border-radius: 4px;
+  font-size: 10px;
+  display: flex; align-items: center; justify-content: center;
+  margin-top: 2px;
+  &:hover { border-color: var(--amber); color: var(--amber); }
+}
+ 
+.edit-section {
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  animation: slideIn .15s ease;
+}
+ 
+.edit-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+ 
+  label {
+    font-size: 11px;
+    color: var(--muted);
+    width: 70px;
+    flex-shrink: 0;
+    text-transform: uppercase;
+    letter-spacing: .5px;
+  }
+}
+ 
+.btn-group {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+ 
+.p-btn, .s-btn {
+  font-size: 11px;
+  padding: 4px 10px;
+  border-radius: 5px;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  color: var(--muted);
+  transition: all .15s;
+ 
+  &:hover { border-color: var(--subtle); color: var(--text); }
+ 
+  &.active {
+    &.critical { background: rgba(240,78,78,.15);  color: var(--red);   border-color: var(--red);   }
+    &.high     { background: rgba(245,166,35,.15); color: var(--amber); border-color: var(--amber); }
+    &.medium   { background: rgba(78,141,240,.15); color: var(--blue);  border-color: var(--blue);  }
+    &.low      { background: rgba(107,114,128,.15);color: var(--muted); border-color: var(--muted); }
+    border-color: var(--amber); color: var(--amber);
+  }
+}
+ 
+.edit-input {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  color: var(--text);
+  border-radius: 6px;
+  padding: 6px 10px;
+  font-size: 12px;
+  font-family: 'Outfit', sans-serif;
+  outline: none;
+  &:focus { border-color: var(--amber); }
+ 
+  /* Date/time picker dark theme */
+  color-scheme: dark;
+}
+ 
+.edit-actions {
+  display: flex;
+  gap: 8px;
+  padding-top: 4px;
+}
+ 
+.save-btn {
+  background: var(--green);
+  color: #000;
+  font-weight: 600;
+  font-size: 12px;
+  padding: 6px 16px;
+  border-radius: 6px;
+}
+ 
+.cancel-btn {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  color: var(--muted);
+  font-size: 12px;
+  padding: 6px 12px;
+  border-radius: 6px;
+}
+ 
+.delete-btn {
+  margin-left: auto;
+  background: transparent;
+  border: 1px solid var(--border);
+  color: var(--red);
+  font-size: 12px;
+  padding: 6px 12px;
+  border-radius: 6px;
+  &:hover { border-color: var(--red); background: rgba(240,78,78,.1); }
 }
