@@ -5,3 +5,11 @@
     "changeOrigin": true
   }
 }
+
+{
+  "/api": {
+    "target": "https://worklog-ai-backend.up.railway.app",
+    "secure": true,
+    "changeOrigin": true
+  }
+}
