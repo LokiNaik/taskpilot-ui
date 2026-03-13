@@ -1,14 +1,14 @@
 <div class="card" [class]="task.priority" [class.done]="isDone">
- 
+
   <!-- Top row -->
   <div class="card-top">
     <div class="check" [class.checked]="isDone" (click)="toggleDone()">
       {{ isDone ? '✓' : '' }}
     </div>
- 
+
     <div class="body">
       <div class="title" [class.done]="isDone">{{ task.title }}</div>
- 
+
       <div class="meta">
         <span class="tag" *ngFor="let tag of task.tags">#{{ tag }}</span>
         <span class="due" [class.overdue]="isOverdue" [class.today]="isDueToday" *ngIf="task.due_date">
@@ -16,7 +16,7 @@
         </span>
         <span class="status-badge">{{ task.status | titlecase }}</span>
       </div>
- 
+
       <div class="score-row" *ngIf="task.ai_priority_score !== null">
         <div class="score-track">
           <div class="score-fill" [style.width]="scoreWidth" [style.background]="scoreColor"></div>
@@ -25,7 +25,7 @@
         <span class="score-note" *ngIf="task.ai_notes">· {{ task.ai_notes }}</span>
       </div>
     </div>
- 
+
     <div class="right">
       <span class="priority-badge" [class]="task.priority">{{ task.priority }}</span>
       <button class="edit-toggle" (click)="expanded = !expanded">
@@ -33,66 +33,83 @@
       </button>
     </div>
   </div>
- 
+
   <!-- Expanded edit section -->
   <div class="edit-section" *ngIf="expanded">
- 
+
     <!-- Priority -->
     <div class="edit-row">
       <label>Priority</label>
       <div class="btn-group">
-        <button
-          *ngFor="let p of priorities"
-          class="p-btn"
-          [class]="p"
-          [class.active]="editPriority === p"
+        <button *ngFor="let p of priorities" class="p-btn" [class]="p" [class.active]="editPriority === p"
           (click)="editPriority = p">
           {{ p }}
         </button>
       </div>
     </div>
- 
+
     <!-- Due Date -->
     <div class="edit-row">
       <label>Due Date</label>
-      <input
-        type="date"
-        class="edit-input"
-        [(ngModel)]="editDueDate"
-      />
+      <input type="date" class="edit-input" [(ngModel)]="editDueDate" />
     </div>
- 
+
     <!-- Due Time -->
     <div class="edit-row">
       <label>Due Time</label>
-      <input
-        type="time"
-        class="edit-input"
-        [(ngModel)]="editDueTime"
-      />
+      <input type="time" class="edit-input" [(ngModel)]="editDueTime" />
     </div>
- 
+
     <!-- Status -->
     <div class="edit-row">
       <label>Status</label>
       <div class="btn-group">
-        <button
-          *ngFor="let s of statuses"
-          class="s-btn"
-          [class.active]="task.status === s.value"
+        <button *ngFor="let s of statuses" class="s-btn" [class.active]="task.status === s.value"
           (click)="setStatus(s.value)">
           {{ s.label }}
         </button>
       </div>
     </div>
- 
+
     <!-- Action buttons -->
     <div class="edit-actions">
       <button class="save-btn" (click)="saveEdits()">✓ Save</button>
       <button class="cancel-btn" (click)="expanded = false">Cancel</button>
       <button class="delete-btn" (click)="delete()">Delete</button>
     </div>
- 
+
+    <!-- Notes section -->
+    <div class="notes-section">
+      <div class="notes-header" (click)="toggleNotes()">
+        📝 Notes / Updates
+        <span class="notes-count" *ngIf="notes.length">{{ notes.length }}</span>
+        <span class="notes-toggle">{{ showNotes ? '▲' : '▼' }}</span>
+      </div>
+
+      <div class="notes-body" *ngIf="showNotes">
+        <!-- Add note -->
+        <div class="note-input-row">
+          <input class="note-input" [(ngModel)]="newNote" placeholder="Add an update or note..."
+            (keyup.enter)="addNote()" />
+          <button class="note-add-btn" (click)="addNote()">Add</button>
+        </div>
+
+        <!-- Notes list -->
+        <div class="note-item" *ngFor="let note of notes">
+          <div class="note-text">{{ note.note }}</div>
+          <div class="note-meta">
+            <span>{{ note.author }}</span>
+            <span>{{ note.created_at | date:'dd MMM, hh:mm a' }}</span>
+            <button class="note-delete" (click)="deleteNote(note.id)">✕</button>
+          </div>
+        </div>
+
+        <div class="no-notes" *ngIf="notes.length === 0">
+          No notes yet — add your first update!
+        </div>
+      </div>
+    </div>
+
   </div>
- 
+
 </div>

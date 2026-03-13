@@ -1,24 +1,24 @@
 import { Component, Output, EventEmitter } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { UserService } from '../../services/user.service';
+import { RouterLink, RouterLinkActive } from '@angular/router';
+import { AuthService } from '../../services/auth.service';
 
 @Component({
   selector: 'app-header',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, RouterLink, RouterLinkActive],
   templateUrl: './header.component.html',
   styleUrl: './header.component.scss'
 })
 export class HeaderComponent {
+  today = new Date();
+
   @Output() openDigest = new EventEmitter<void>();
 
-  today = new Date().toLocaleDateString('en-IN', {
-    weekday: 'long', day: 'numeric', month: 'short', year: 'numeric'
-  });
-
-  constructor(public userService: UserService) {}
+  constructor(public auth: AuthService) {}
 
   get userInitial(): string {
-    return this.userService.currentUser()?.name?.charAt(0).toUpperCase() || 'U';
+    const name = this.auth.currentUser()?.name || '';
+    return name.charAt(0).toUpperCase();
   }
 }

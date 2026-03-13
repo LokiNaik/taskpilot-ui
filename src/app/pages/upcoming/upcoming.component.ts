@@ -2,7 +2,7 @@ import { Component, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Task } from '../../models/task.model';
 import { TaskService } from '../../services/task.service';
-import { UserService } from '../../services/user.service';
+import { AuthService } from '../../services/auth.service';
 import { TaskCardComponent } from '../../components/task-card/task-card.component';
 
 @Component({
@@ -54,41 +54,76 @@ export class UpcomingComponent implements OnInit {
   tasks   = signal<Task[]>([]);
   loading = signal(true);
 
-  constructor(private taskService: TaskService, private userService: UserService) {}
+  constructor(
+    private taskService: TaskService,
+    private auth: AuthService
+  ) {}
 
   ngOnInit() {
-    setTimeout(() => {
-      const userId = this.userService.getUserId();
-      if (!userId) { this.loading.set(false); return; }
-      this.taskService.getTasks(userId).subscribe({
-        next: ({ tasks }) => {
-          const upcoming = tasks
-            .filter(t => t.due_date && t.status !== 'done')
-            .sort((a, b) => new Date(a.due_date!).getTime() - new Date(b.due_date!).getTime());
-          this.tasks.set(upcoming);
-          this.loading.set(false);
-        },
-        error: () => this.loading.set(false)
-      });
-    }, 800);
+    const userId = this.auth.getUserId();
+    if (!userId) { this.loading.set(false); return; }
+
+    this.taskService.getTasks(userId).subscribe({
+      next: (response: any) => {
+        const tasks = Array.isArray(response) ? response : (response?.tasks || []);
+        this.tasks.set(tasks);
+        this.loading.set(false);
+      },
+      error: () => {
+        this.tasks.set([]);
+        this.loading.set(false);
+      }
+    });
   }
 
   get groupedTasks(): { label: string; tasks: Task[] }[] {
-    const today    = new Date(); today.setHours(0,0,0,0);
-    const tomorrow = new Date(today); tomorrow.setDate(today.getDate() + 1);
-    const next7    = new Date(today); next7.setDate(today.getDate() + 7);
+  const all = this.tasks() || [];
 
-    const groups = [
-      { label: 'Overdue',        tasks: this.tasks().filter(t => new Date(t.due_date!) < today) },
-      { label: 'Today',          tasks: this.tasks().filter(t => new Date(t.due_date!).toDateString() === today.toDateString()) },
-      { label: 'Tomorrow',       tasks: this.tasks().filter(t => new Date(t.due_date!).toDateString() === tomorrow.toDateString()) },
-      { label: 'Next 7 Days',    tasks: this.tasks().filter(t => { const d = new Date(t.due_date!); return d > tomorrow && d <= next7; }) },
-      { label: 'Later',          tasks: this.tasks().filter(t => new Date(t.due_date!) > next7) },
-    ];
+  const today    = new Date(); today.setHours(0, 0, 0, 0);
+  const tomorrow = new Date(today); tomorrow.setDate(today.getDate() + 1);
+  const next7    = new Date(today); next7.setDate(today.getDate() + 7);
 
-    return groups.filter(g => g.tasks.length > 0);
+  const withDate    = all.filter(t => !!t.due_date);
+  const withoutDate = all.filter(t => !t.due_date && t.status !== 'done');
+
+  const groups = [
+    {
+      label: '🔴 Overdue',
+      tasks: withDate.filter(t => new Date(t.due_date!) < today && t.status !== 'done')
+    },
+    {
+      label: '📅 Today',
+      tasks: withDate.filter(t => new Date(t.due_date!).toDateString() === today.toDateString())
+    },
+    {
+      label: '🌅 Tomorrow',
+      tasks: withDate.filter(t => new Date(t.due_date!).toDateString() === tomorrow.toDateString())
+    },
+    {
+      label: '📆 Next 7 Days',
+      tasks: withDate.filter(t => {
+        const d = new Date(t.due_date!);
+        return d > tomorrow && d <= next7;
+      })
+    },
+    {
+      label: '🗓️ Later',
+      tasks: withDate.filter(t => new Date(t.due_date!) > next7)
+    },
+    {
+      label: '📋 No Due Date',
+      tasks: withoutDate
+    },
+  ];
+
+  return groups.filter(g => g.tasks.length > 0);
+}
+
+  onUpdated(t: Task) {
+    this.tasks.update(list => (list || []).map(x => x.id === t.id ? t : x));
   }
 
-  onUpdated(t: Task)  { this.tasks.update(list => list.map(x => x.id === t.id ? t : x)); }
-  onDeleted(id: string) { this.tasks.update(list => list.filter(x => x.id !== id)); }
+  onDeleted(id: string) {
+    this.tasks.update(list => (list || []).filter(x => x.id !== id));
+  }
 }

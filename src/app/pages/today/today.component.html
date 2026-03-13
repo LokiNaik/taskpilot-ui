@@ -6,8 +6,8 @@
   <button
     class="chip"
     *ngFor="let f of filters"
-    [class.active]="filter() === f.value"
-    (click)="filter.set(f.value)">
+    [class.active]="activeFilter() === f.value"
+    (click)="setFilter(f.value)">
     {{ f.label }}
   </button>
 
@@ -40,14 +40,14 @@
   </div>
 
   <!-- Empty -->
-  <div class="empty-state" *ngIf="!loading() && filteredTasks.length === 0">
+  <div class="empty-state" *ngIf="!loading() && tasks().length === 0">
     <div class="empty-icon">◌</div>
     <p>No tasks here. Type something above to get started!</p>
   </div>
 
   <!-- Tasks -->
   <app-task-card
-    *ngFor="let task of filteredTasks"
+    *ngFor="let task of filteredTasks()"
     [task]="task"
     (taskUpdated)="onTaskUpdated($event)"
     (taskDeleted)="onTaskDeleted($event)"

@@ -1,7 +1,9 @@
+
 {
   "/api": {
-    "target": "https://worklog-ai-backend.up.railway.app",
-    "secure": true,
-    "changeOrigin": true
+    "target": "http://localhost:3000",
+    "secure": false,
+    "changeOrigin": true,
+    "logLevel": "debug"
   }
 }

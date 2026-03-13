@@ -5,5 +5,9 @@
   <button class="digest-btn" (click)="openDigest.emit()">
     ✦ Today's Digest
   </button>
+  <div class="user-info">
+  <span class="user-name">{{ auth.currentUser()?.name }}</span>
+  <button class="logout-btn" (click)="auth.logout()">Sign out</button>
+</div>
   <div class="avatar">{{ userInitial }}</div>
 </header>

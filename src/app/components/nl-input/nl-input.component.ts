@@ -44,8 +44,8 @@ export class NlInputComponent {
     this.loading.set(true);
     this.error.set('');
 
-    this.taskService.addFromNaturalLanguage(trimmed, userId).subscribe({
-      next: ({ task }) => {
+    this.taskService.addFromNaturalLanguage(trimmed).subscribe({
+  next: (task: any) => {
         this.taskAdded.emit(task);
         this.text = '';
         this.loading.set(false);

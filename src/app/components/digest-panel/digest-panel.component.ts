@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { TaskService } from '../../services/task.service';
 import { UserService } from '../../services/user.service';
 import { DigestResponse } from '../../models/task.model';
+import { AuthService } from '../../services/auth.service';
 
 @Component({
   selector: 'app-digest-panel',
@@ -20,7 +21,8 @@ export class DigestPanelComponent implements OnChanges {
 
   constructor(
     private taskService: TaskService,
-    private userService: UserService
+    private userService: UserService,
+    private auth: AuthService
   ) {}
 
   ngOnChanges() {
@@ -30,7 +32,7 @@ export class DigestPanelComponent implements OnChanges {
   }
 
 loadDigest() {
-  const userId = this.userService.getUserId();
+  const userId = this.auth.getUserId(); // ← auth se lo
   if (!userId) return;
 
   this.loading.set(true);
@@ -57,8 +59,8 @@ loadDigest() {
 
   regenerate() {
     this.digest.set(null);
-    const userId = this.userService.getUserId();
-    if (!userId) return;
+    const userId = this.auth.getUserId(); // ← yahan bhi
+  if (!userId) return;
     this.loading.set(true);
     this.taskService.generateDigest(userId).subscribe({
       next:  (data) => { this.digest.set(data); this.loading.set(false); },

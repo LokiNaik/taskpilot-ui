@@ -52,3 +52,13 @@
   cursor: pointer;
   flex-shrink: 0;
 }
+.user-info {
+  display: flex; align-items: center; gap: 12px; margin-left: auto;
+}
+.user-name { font-size: 13px; color: var(--muted); }
+.logout-btn {
+  font-size: 12px; padding: 5px 12px;
+  background: var(--surface2); border: 1px solid var(--border);
+  border-radius: 6px; color: var(--muted);
+  &:hover { color: var(--red); border-color: var(--red); }
+}

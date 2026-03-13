@@ -5,5 +5,6 @@
 
 export const environment = {
   production: false,
-  apiUrl: 'https://worklog-ai-backend.up.railway.app/api'
+  apiUrl:     'http://localhost:3000/api',
+  appName:    'WorkLog AI (Local)'
 };
