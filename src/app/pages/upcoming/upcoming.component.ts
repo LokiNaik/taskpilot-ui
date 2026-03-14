@@ -1,4 +1,4 @@
-import { Component, OnInit, signal } from '@angular/core';
+import { Component, OnInit, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Task } from '../../models/task.model';
 import { TaskService } from '../../services/task.service';
@@ -19,13 +19,13 @@ import { TaskCardComponent } from '../../components/task-card/task-card.componen
       <div class="task-list">
         <div class="loading" *ngIf="loading()">Loading...</div>
 
-        <ng-container *ngFor="let group of groupedTasks">
+        <ng-container *ngFor="let group of groupedTasks()">
           <div class="group-header">
             <span>{{ group.label }}</span>
             <div class="line"></div>
           </div>
           <app-task-card
-            *ngFor="let task of group.tasks"
+            *ngFor="let task of group.tasks; trackBy: trackById"
             [task]="task"
             (taskUpdated)="onUpdated($event)"
             (taskDeleted)="onDeleted($event)"
@@ -33,17 +33,17 @@ import { TaskCardComponent } from '../../components/task-card/task-card.componen
         </ng-container>
 
         <div class="empty" *ngIf="!loading() && tasks().length === 0">
-          No upcoming tasks with deadlines. 🎉
+          No upcoming tasks. 🎉
         </div>
       </div>
     </div>
   `,
   styles: [`
-    .page { display: flex; flex-direction: column; height: 100%; overflow: hidden; }
+    .page { flex: 1; display: flex; flex-direction: column; min-height: 0; overflow: hidden; }
     .page-header { display: flex; align-items: center; gap: 12px; padding: 20px 24px 12px; border-bottom: 1px solid var(--border); flex-shrink: 0; }
     h2 { font-size: 19px; }
     .count { font-size: 12px; color: var(--muted); }
-    .task-list { flex: 1; overflow-y: auto; padding: 16px 24px 40px; display: flex; flex-direction: column; gap: 8px; }
+    .task-list { flex: 1; overflow-y: auto; overflow-x: hidden; padding: 16px 24px 40px; display: flex; flex-direction: column; gap: 8px; min-height: 0; }
     .group-header { display: flex; align-items: center; gap: 12px; padding: 8px 0 4px; color: var(--muted); font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: .8px; }
     .line { flex: 1; height: 1px; background: var(--border); }
     .loading, .empty { color: var(--muted); font-size: 13px; padding: 40px 0; text-align: center; }
@@ -76,48 +76,54 @@ export class UpcomingComponent implements OnInit {
     });
   }
 
-  get groupedTasks(): { label: string; tasks: Task[] }[] {
-  const all = this.tasks() || [];
+  // ← computed — sirf tab recalculate hoga jab tasks() change hoga
+  groupedTasks = computed(() => {
+    const all = this.tasks() || [];
 
-  const today    = new Date(); today.setHours(0, 0, 0, 0);
-  const tomorrow = new Date(today); tomorrow.setDate(today.getDate() + 1);
-  const next7    = new Date(today); next7.setDate(today.getDate() + 7);
+    const today    = new Date(); today.setHours(0,0,0,0);
+    const tomorrow = new Date(today); tomorrow.setDate(today.getDate() + 1);
+    const next7    = new Date(today); next7.setDate(today.getDate() + 7);
 
-  const withDate    = all.filter(t => !!t.due_date);
-  const withoutDate = all.filter(t => !t.due_date && t.status !== 'done');
+    const withDate    = all.filter(t => !!t.due_date);
+    const withoutDate = all.filter(t => !t.due_date && t.status !== 'done');
 
-  const groups = [
-    {
-      label: '🔴 Overdue',
-      tasks: withDate.filter(t => new Date(t.due_date!) < today && t.status !== 'done')
-    },
-    {
-      label: '📅 Today',
-      tasks: withDate.filter(t => new Date(t.due_date!).toDateString() === today.toDateString())
-    },
-    {
-      label: '🌅 Tomorrow',
-      tasks: withDate.filter(t => new Date(t.due_date!).toDateString() === tomorrow.toDateString())
-    },
-    {
-      label: '📆 Next 7 Days',
-      tasks: withDate.filter(t => {
-        const d = new Date(t.due_date!);
-        return d > tomorrow && d <= next7;
-      })
-    },
-    {
-      label: '🗓️ Later',
-      tasks: withDate.filter(t => new Date(t.due_date!) > next7)
-    },
-    {
-      label: '📋 No Due Date',
-      tasks: withoutDate
-    },
-  ];
+    const groups = [
+      {
+        label: '🔴 Overdue',
+        tasks: withDate.filter(t => new Date(t.due_date!) < today && t.status !== 'done')
+      },
+      {
+        label: '📅 Today',
+        tasks: withDate.filter(t => new Date(t.due_date!).toDateString() === today.toDateString())
+      },
+      {
+        label: '🌅 Tomorrow',
+        tasks: withDate.filter(t => new Date(t.due_date!).toDateString() === tomorrow.toDateString())
+      },
+      {
+        label: '📆 Next 7 Days',
+        tasks: withDate.filter(t => {
+          const d = new Date(t.due_date!);
+          return d > tomorrow && d <= next7;
+        })
+      },
+      {
+        label: '🗓️ Later',
+        tasks: withDate.filter(t => new Date(t.due_date!) > next7)
+      },
+      {
+        label: '📋 No Due Date',
+        tasks: withoutDate
+      },
+    ];
 
-  return groups.filter(g => g.tasks.length > 0);
-}
+    return groups.filter(g => g.tasks.length > 0);
+  });
+
+  // ← trackBy — components destroy/recreate nahi honge
+  trackById(index: number, task: Task) {
+    return task.id;
+  }
 
   onUpdated(t: Task) {
     this.tasks.update(list => (list || []).map(x => x.id === t.id ? t : x));

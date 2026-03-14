@@ -74,6 +74,21 @@ input, textarea {
   &::placeholder { color: var(--muted); }
   &:focus { border-color: var(--amber); }
 }
+.main-content {
+  flex: 1;
+  overflow: hidden;   // ← auto se hidden karo
+  min-height: 0;      // ← add karo
+  display: flex;
+  flex-direction: column;
+}
+
+router-outlet + * {
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
 
 /* ── Animations ─────────────────────────────────────────────── */
 @keyframes slideIn {

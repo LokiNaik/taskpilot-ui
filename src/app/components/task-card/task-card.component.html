@@ -28,20 +28,24 @@
 
     <div class="right">
       <span class="priority-badge" [class]="task.priority">{{ task.priority }}</span>
-      <button class="edit-toggle" (click)="expanded = !expanded">
-        {{ expanded ? '▲' : '▼' }}
+      <button class="edit-toggle" (click)="toggleExpand($event)">
+        {{ expanded() ? '▲' : '▼' }}
       </button>
     </div>
   </div>
 
   <!-- Expanded edit section -->
-  <div class="edit-section" *ngIf="expanded">
+  <div class="edit-section" *ngIf="expanded()">
 
     <!-- Priority -->
     <div class="edit-row">
       <label>Priority</label>
       <div class="btn-group">
-        <button *ngFor="let p of priorities" class="p-btn" [class]="p" [class.active]="editPriority === p"
+        <button
+          *ngFor="let p of priorities"
+          class="p-btn"
+          [class]="p"
+          [class.active]="editPriority === p"
           (click)="editPriority = p">
           {{ p }}
         </button>
@@ -64,7 +68,10 @@
     <div class="edit-row">
       <label>Status</label>
       <div class="btn-group">
-        <button *ngFor="let s of statuses" class="s-btn" [class.active]="task.status === s.value"
+        <button
+          *ngFor="let s of statuses"
+          class="s-btn"
+          [class.active]="task.status === s.value"
           (click)="setStatus(s.value)">
           {{ s.label }}
         </button>
@@ -74,7 +81,7 @@
     <!-- Action buttons -->
     <div class="edit-actions">
       <button class="save-btn" (click)="saveEdits()">✓ Save</button>
-      <button class="cancel-btn" (click)="expanded = false">Cancel</button>
+      <button class="cancel-btn" (click)="expanded.set(false)">Cancel</button>
       <button class="delete-btn" (click)="delete()">Delete</button>
     </div>
 
@@ -87,14 +94,16 @@
       </div>
 
       <div class="notes-body" *ngIf="showNotes">
-        <!-- Add note -->
         <div class="note-input-row">
-          <input class="note-input" [(ngModel)]="newNote" placeholder="Add an update or note..."
-            (keyup.enter)="addNote()" />
+          <input
+            class="note-input"
+            [(ngModel)]="newNote"
+            placeholder="Add an update or note..."
+            (keyup.enter)="addNote()"
+          />
           <button class="note-add-btn" (click)="addNote()">Add</button>
         </div>
 
-        <!-- Notes list -->
         <div class="note-item" *ngFor="let note of notes">
           <div class="note-text">{{ note.note }}</div>
           <div class="note-meta">

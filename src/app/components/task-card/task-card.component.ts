@@ -1,4 +1,4 @@
-import { Component, Input, Output, EventEmitter, OnInit } from '@angular/core';
+import { Component, Input, Output, EventEmitter, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Task, TaskStatus, TaskPriority } from '../../models/task.model';
@@ -12,39 +12,41 @@ import { TaskService } from '../../services/task.service';
   styleUrl: './task-card.component.scss'
 })
 export class TaskCardComponent implements OnInit {
-  @Input() task!: Task;
+  @Input()  task!: Task;
   @Output() taskUpdated = new EventEmitter<Task>();
   @Output() taskDeleted = new EventEmitter<string>();
 
-  expanded = false;
-
-  // Edit fields
-  editPriority = '';
-  editDueDate = '';
-  editDueTime = '';
-
-  notes: any[] = [];
-  newNote = '';
+  expanded  = signal(false);
   showNotes = false;
+
+  editPriority = '';
+  editDueDate  = '';
+  editDueTime  = '';
+
+  notes:   any[] = [];
+  newNote  = '';
 
   priorities: TaskPriority[] = ['critical', 'high', 'medium', 'low'];
 
   statuses = [
-    { value: 'todo', label: 'Todo' },
+    { value: 'todo',        label: 'Todo' },
     { value: 'in_progress', label: 'In Progress' },
-    { value: 'blocked', label: 'Blocked' },
-    { value: 'done', label: 'Done' },
-    { value: 'deferred', label: 'Defer' },
+    { value: 'blocked',     label: 'Blocked' },
+    { value: 'done',        label: 'Done' },
+    { value: 'deferred',    label: 'Defer' },
   ];
 
-  constructor(private taskService: TaskService) { }
+  constructor(private taskService: TaskService) {}
 
   ngOnInit() {
-    // Pre-fill edit fields with current values
     this.editPriority = this.task.priority;
-    this.editDueDate = this.task.due_date || '';
-    this.editDueTime = this.task.due_time || '';
-    // this.loadNotes(); // ← add karo
+    this.editDueDate  = this.task.due_date || '';
+    this.editDueTime  = this.task.due_time || '';
+  }
+
+  toggleExpand(event: Event) {
+    event.stopPropagation();
+    this.expanded.set(!this.expanded());
   }
 
   toggleDone() {
@@ -66,10 +68,9 @@ export class TaskCardComponent implements OnInit {
       due_date: this.editDueDate || null,
       due_time: this.editDueTime || null,
     };
-
     this.taskService.updateTask(this.task.id, updates).subscribe(updated => {
       this.taskUpdated.emit(updated);
-      this.expanded = false;
+      this.expanded.set(false);
     });
   }
 
@@ -80,16 +81,17 @@ export class TaskCardComponent implements OnInit {
       });
     }
   }
-  loadNotes() {
-    this.taskService.getNotes(this.task.id).subscribe({
-      next: notes => this.notes = notes,
-      error: () => this.notes = []
-    });
-  }
 
   toggleNotes() {
     this.showNotes = !this.showNotes;
-    if (this.showNotes) this.loadNotes(); // har baar fresh load
+    if (this.showNotes) this.loadNotes();
+  }
+
+  loadNotes() {
+    this.taskService.getNotes(this.task.id).subscribe({
+      next: notes => this.notes = notes,
+      error: ()   => this.notes = []
+    });
   }
 
   addNote() {
@@ -124,12 +126,12 @@ export class TaskCardComponent implements OnInit {
 
   get dueDateLabel(): string {
     if (!this.task.due_date) return '';
-    const due = new Date(this.task.due_date);
+    const due   = new Date(this.task.due_date);
     const today = new Date();
-    today.setHours(0, 0, 0, 0);
-    due.setHours(0, 0, 0, 0);
+    today.setHours(0,0,0,0);
+    due.setHours(0,0,0,0);
     const diff = Math.ceil((due.getTime() - today.getTime()) / 86400000);
-    if (diff < 0) return `${Math.abs(diff)}d overdue`;
+    if (diff < 0)   return `${Math.abs(diff)}d overdue`;
     if (diff === 0) return 'Due today';
     if (diff === 1) return 'Due tomorrow';
     return `Due in ${diff}d`;

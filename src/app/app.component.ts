@@ -20,26 +20,35 @@ import { DigestPanelComponent } from './components/digest-panel/digest-panel.com
       <app-digest-panel [open]="digestOpen" (close)="digestOpen = false" />
     </div>
   `,
-  styles: [`
-    .app-shell {
-      display: flex;
-      flex-direction: column;
-      height: 100vh;
-      position: relative;
-      z-index: 1;
-    }
-    .app-body {
-      display: flex;
-      flex: 1;
-      overflow: hidden;
-    }
-    .app-main {
-      flex: 1;
-      overflow: hidden;
-      display: flex;
-      flex-direction: column;
-    }
-  `]
+ styles: [`
+  .app-shell {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    overflow: hidden;
+  }
+  .app-body {
+    display: flex;
+    flex: 1;
+    min-height: 0;
+    overflow: hidden;
+  }
+  .app-main {
+    flex: 1;
+    min-height: 0;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+  }
+  /* ← YAHI FIX HAI — router-outlet ke baad jo component render hota hai */
+  .app-main > *:not(router-outlet) {
+    flex: 1;
+    min-height: 0;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+  }
+`]
 })
 export class AppComponent {
   digestOpen = false;

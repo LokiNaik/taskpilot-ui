@@ -36,15 +36,42 @@ import { AuthService } from '../../services/auth.service';
       </div>
     </div>
   `,
-  styles: [`
-    .page { display: flex; flex-direction: column; height: 100%; overflow: hidden; }
-    .page-header { display: flex; align-items: center; gap: 12px; padding: 16px 24px; border-bottom: 1px solid var(--border); flex-shrink: 0; }
-    h2 { font-size: 19px; white-space: nowrap; }
-    .search { width: 260px; padding: 7px 12px; font-size: 13px; background: var(--surface2); border: 1px solid var(--border); border-radius: 6px; color: var(--text); outline: none; &:focus { border-color: var(--amber); } }
-    .count { font-size: 12px; color: var(--muted); margin-left: auto; font-family: 'JetBrains Mono', monospace; }
-    .task-list { flex: 1; overflow-y: auto; padding: 16px 24px 40px; display: flex; flex-direction: column; gap: 8px; }
-    .loading, .empty { color: var(--muted); font-size: 13px; padding: 40px 0; text-align: center; }
-  `]
+styles: [`
+  .page { 
+    flex: 1;            /* ← height: 100% ki jagah */
+    display: flex; 
+    flex-direction: column; 
+    min-height: 0;
+    overflow: hidden;
+  }
+  .page-header { 
+    display: flex; 
+    align-items: center; 
+    gap: 12px; 
+    padding: 16px 24px; 
+    border-bottom: 1px solid var(--border); 
+    flex-shrink: 0;
+  }
+  h2 { font-size: 19px; white-space: nowrap; }
+  .search { 
+    width: 260px; padding: 7px 12px; font-size: 13px; 
+    background: var(--surface2); border: 1px solid var(--border); 
+    border-radius: 6px; color: var(--text); outline: none; 
+  }
+  .search:focus { border-color: var(--amber); }
+  .count { font-size: 12px; color: var(--muted); margin-left: auto; font-family: 'JetBrains Mono', monospace; }
+  .task-list { 
+    flex: 1; 
+    overflow-y: auto;
+    overflow-x: hidden;
+    padding: 16px 24px 40px; 
+    display: flex; 
+    flex-direction: column; 
+    gap: 8px;
+    min-height: 0;
+  }
+  .loading, .empty { color: var(--muted); font-size: 13px; padding: 40px 0; text-align: center; }
+`]
 })
 export class AllTasksComponent implements OnInit {
 
